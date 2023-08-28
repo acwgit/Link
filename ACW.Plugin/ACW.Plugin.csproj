@@ -99,6 +99,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LeadUnitFromLease.cs" />
     <Compile Include="UpdateAllAssociateRecords.cs" />
     <Compile Include="GetFieldFromLookupEntity.cs" />
     <Compile Include="GetTextFieldFromLookupEntity.cs" />
