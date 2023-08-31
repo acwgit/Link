@@ -12,17 +12,16 @@ using System.Threading.Tasks;
 namespace ACW.Plugin
 {
     public class LeadPopulateBudgetFields : CodeActivity
-    {
-
-        [RequiredArgument]
-        [Input("Lease")]
-        [ReferenceTarget("lms_lease")]
-        public InArgument<EntityReference> _leaseRef { get; set; }
+    {        
 
         [RequiredArgument]
         [Input("Lead")]
         [ReferenceTarget("clf_lead")]
         public InArgument<EntityReference> _leadRef { get; set; }
+
+        [RequiredArgument]
+        [Input("Lease End + 1")]        
+        public InArgument<DateTime> _leaseEndPlus1 { get; set; }
         protected override void Execute(CodeActivityContext executionContext)
         {
             IWorkflowContext context = executionContext.GetExtension<IWorkflowContext>();
@@ -33,8 +32,9 @@ namespace ACW.Plugin
 
             try
             {
-                EntityReference leaseRef = this._leaseRef.Get(executionContext);
+                
                 EntityReference leadRef = this._leadRef.Get(executionContext);
+                DateTime leaseEndPlus1 = this._leaseEndPlus1.Get(executionContext);
                 string budgetYear = "";
 
                 DateTime budgetLeaseStart = new DateTime();
@@ -48,12 +48,7 @@ namespace ACW.Plugin
                     tracer.Trace("No Lead Found");
                     return;
                 }
-
-                if (leaseRef == null)
-                {
-                    tracer.Trace("No Lease Found");
-                    return;
-                }
+                
                 //Find Budget Year
 
                 QueryExpression systemConfigQe = new QueryExpression("lms_systemconfiguration");
@@ -102,7 +97,8 @@ namespace ACW.Plugin
                 {
                     QueryExpression budgetQe = new QueryExpression("lms_budget");
                     budgetQe.Criteria.AddCondition("lms_unitid", ConditionOperator.Equal, unitRef.Id);
-                    budgetQe.Criteria.AddCondition("lms_leaseid", ConditionOperator.Equal, leaseRef.Id);
+                    budgetQe.Criteria.AddCondition("lms_renewaldoc", ConditionOperator.OnOrBefore, leaseEndPlus1);
+                    budgetQe.Criteria.AddCondition("lms_renewaldoe", ConditionOperator.OnOrAfter, leaseEndPlus1);
                     budgetQe.LinkEntities.Add(new LinkEntity("lms_budget", "lms_budgetyear", "lms_year", "lms_budgetyearid", JoinOperator.Inner));
                     budgetQe.LinkEntities[0].LinkCriteria.AddCondition("lms_name", ConditionOperator.Like, budgetYear);
 
@@ -138,8 +134,16 @@ namespace ACW.Plugin
 
                 //Map Fields to Lead
                 Entity update_LeadEn = new Entity(leadRef.LogicalName, leadRef.Id);
-                update_LeadEn["clf_budgetleasestart"] = budgetLeaseStart;
-                update_LeadEn["clf_budgetleaseend"] = budgetLeaseEnd;
+                if (!budgetLeaseStart.ToString().Contains("0001")) 
+                {
+                    update_LeadEn["clf_budgetleasestart"] = budgetLeaseStart;
+                }
+
+                if (!budgetLeaseEnd.ToString().Contains("0001"))
+                {
+                    update_LeadEn["clf_budgetleaseend"] = budgetLeaseEnd;
+                }
+               
                 update_LeadEn["clf_budgetbaserent"] = new Money(budgetBaseRent);
                 update_LeadEn["clf_budgetmgtfee"] = new Money(budgetMgtFee);
 
