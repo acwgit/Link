@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DynamicUrlParser.cs" />
+    <Compile Include="GetTradeNatureFromTradeCategory.cs" />
     <Compile Include="LeadPopulateBudgetFields.cs" />
     <Compile Include="LeadUnitFromLease.cs" />
     <Compile Include="MapMultiSelectOptionSet.cs" />
