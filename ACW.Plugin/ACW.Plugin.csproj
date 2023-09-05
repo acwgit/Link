@@ -105,6 +105,7 @@
     <Compile Include="LeadUnitFromLease.cs" />
     <Compile Include="MapMultiSelectOptionSet.cs" />
     <Compile Include="OriginalLeasesFromLease.cs" />
+    <Compile Include="TaskGetBatchAndAmountText.cs" />
     <Compile Include="UpdateAllAssociateRecords.cs" />
     <Compile Include="GetFieldFromLookupEntity.cs" />
     <Compile Include="GetTextFieldFromLookupEntity.cs" />
