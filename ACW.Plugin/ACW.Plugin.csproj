@@ -99,6 +99,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BookingCreateBookingUnitText.cs" />
     <Compile Include="DynamicUrlParser.cs" />
     <Compile Include="GetTradeNatureFromTradeCategory.cs" />
     <Compile Include="LeadPopulateBudgetFields.cs" />
