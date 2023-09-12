@@ -108,6 +108,23 @@ namespace ACW.Plugin
 
                     Entity budgetEn = budgetEc.Entities.FirstOrDefault();
 
+                    if(budgetEn == null) 
+                    {
+                        QueryExpression budgetQe2 = new QueryExpression("lms_budget");
+                        budgetQe2.Criteria.AddCondition("lms_unitid", ConditionOperator.Equal, unitRef.Id);
+                        budgetQe2.Criteria.AddCondition("lms_renewaldoc", ConditionOperator.OnOrAfter, leaseEndPlus1);                        
+                        budgetQe2.LinkEntities.Add(new LinkEntity("lms_budget", "lms_budgetyear", "lms_year", "lms_budgetyearid", JoinOperator.Inner));
+                        budgetQe2.LinkEntities[0].LinkCriteria.AddCondition("lms_name", ConditionOperator.Like, budgetYear);
+
+                        budgetQe2.AddOrder("lms_renewaldoc", OrderType.Ascending);
+
+                        budgetQe2.ColumnSet.AddColumns("lms_renewaldoc", "lms_renewaldoe", "lms_effectivebudgetunit", "lms_renewalmgtunit");
+
+                        EntityCollection budgetEc2 = service.RetrieveMultiple(budgetQe2);
+
+                        budgetEn = budgetEc2.Entities.FirstOrDefault();
+                    }
+
                     if (budgetEn != null) 
                     {
                         if (count == 1) 
@@ -128,6 +145,7 @@ namespace ACW.Plugin
                         service.Create(new_UnitBudgetEn);
 
                     }
+
 
                     count += 1;
                 }
