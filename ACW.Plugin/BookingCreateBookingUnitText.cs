@@ -16,9 +16,9 @@ namespace ACW.Plugin
 
 
         [RequiredArgument]
-        [ReferenceTarget("lms_mmbooking")]
-        [Input("Booking")]
-        public InArgument<EntityReference> _bookingRef { get; set; }
+        [ReferenceTarget("lms_bookingunit")]
+        [Input("Booking Unit")]
+        public InArgument<EntityReference> _bookingUnitRef { get; set; }
 
         [RequiredArgument]        
         [Input("Seperator")]
@@ -36,18 +36,32 @@ namespace ACW.Plugin
             ITracingService tracer = executionContext.GetExtension<ITracingService>();
 
 
-            var bookingRef = this._bookingRef.Get(executionContext);
+            var bookingUnitRef = this._bookingUnitRef.Get(executionContext);
             var seperator = this._seperator.Get(executionContext);
 
             try
-            {
-                if (bookingRef == null) 
+            {                
+                if (bookingUnitRef == null) 
+                {
+                    tracer.Trace("bookingUnitRef not found");
+                    return;
+                }
+
+                Entity bookingUnitEn = service.Retrieve(bookingUnitRef.LogicalName, bookingUnitRef.Id, new ColumnSet("lms_booking"));
+                EntityReference bookingRef = bookingUnitEn.GetAttributeValue<EntityReference>("lms_booking");
+
+                if(bookingRef == null) 
                 {
                     tracer.Trace("bookingRef not found");
+                    return;
                 }
 
                 QueryExpression bookingUnitQe = new QueryExpression("lms_bookingunit");
                 bookingUnitQe.Criteria.AddCondition("lms_booking", ConditionOperator.Equal, bookingRef.Id);
+                if (context.MessageName.ToLower() == "delete") 
+                {
+                    bookingUnitQe.Criteria.AddCondition("lms_bookingunitid", ConditionOperator.NotEqual, bookingUnitRef.Id);
+                }
                 bookingUnitQe.Criteria.AddCondition("lms_unit", ConditionOperator.NotNull);
                 bookingUnitQe.ColumnSet.AddColumns("lms_unit");
 
@@ -56,9 +70,9 @@ namespace ACW.Plugin
                 string tempString = "";
                 int count = 0;
                 
-                foreach (Entity bookingUnitEn in bookingUnitEc.Entities) 
+                foreach (Entity bookingUnitEn_ in bookingUnitEc.Entities) 
                 {
-                    EntityReference unitRef = bookingUnitEn.GetAttributeValue<EntityReference>("lms_unit");
+                    EntityReference unitRef = bookingUnitEn_.GetAttributeValue<EntityReference>("lms_unit");
                     Entity unitEn = service.Retrieve(unitRef.LogicalName, unitRef.Id, new ColumnSet("clf_unitcode"));
 
                     string unitCode = unitEn.GetAttributeValue<string>("clf_unitcode");
