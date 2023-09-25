@@ -103,7 +103,9 @@
     <Compile Include="DynamicUrlParser.cs" />
     <Compile Include="GetTradeNatureFromTradeCategory.cs" />
     <Compile Include="LeadPopulateBudgetFields.cs" />
+    <Compile Include="LeadScenarioUpdateAskingRentOffer.cs" />
     <Compile Include="LeadUnitFromLease.cs" />
+    <Compile Include="LeaseIdRenewalCompareHoldoverEnd.cs" />
     <Compile Include="MapMultiSelectOptionSet.cs" />
     <Compile Include="OriginalLeasesFromLease.cs" />
     <Compile Include="TaskGetBatchAndAmountText.cs" />
