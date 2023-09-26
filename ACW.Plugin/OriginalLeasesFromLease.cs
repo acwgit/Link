@@ -42,7 +42,8 @@ namespace ACW.Plugin
                 }
 
                 QueryExpression leaseQe = new QueryExpression("lms_lease");
-                leaseQe.Criteria.AddCondition("lms_leasenumber", ConditionOperator.Equal, leaseId);                
+                leaseQe.Criteria.AddCondition("lms_leasenumber", ConditionOperator.Equal, leaseId);
+                leaseQe.Criteria.AddCondition("lms_activatedlease", ConditionOperator.Equal, true);
                 leaseQe.ColumnSet.AddColumns("lms_lead");
 
                 EntityCollection leaseEc = service.RetrieveMultiple(leaseQe);
