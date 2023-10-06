@@ -101,6 +101,7 @@
   <ItemGroup>
     <Compile Include="BookingCreateBookingUnitText.cs" />
     <Compile Include="BookingPrefixLogic.cs" />
+    <Compile Include="DealGetOwnerBuName.cs" />
     <Compile Include="DynamicUrlParser.cs" />
     <Compile Include="GetTradeNatureFromTradeCategory.cs" />
     <Compile Include="LeadPopulateBudgetFields.cs" />
