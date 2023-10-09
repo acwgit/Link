@@ -44,65 +44,19 @@ namespace ACW.Plugin
                 {
                     case 176660000: // Legal
                         {
-                            Entity legalBatchRecord = FindBatchRecord("lms_legalbatch", "lms_batchkey", batchKey, service);
-                            EntityReference new_BatchRecordRef = null;
-                            if (legalBatchRecord == null)
-                            {
-                                new_BatchRecordRef = CreateBatchRecord("lms_legalbatch", "lms_batchkey", batchKey, service);
-                            }
-                            else 
-                            {
-                                new_BatchRecordRef = legalBatchRecord.ToEntityReference();
-                            }
-
-                            Entity update_BatchRecordEn = new Entity(taskEn.LogicalName, taskEn.Id);
-                            update_BatchRecordEn["lms_legalbatch"] = new_BatchRecordRef;
-
-                            service.Update(update_BatchRecordEn);
-                            tracer.Trace("Updated Legal Batch Record ID: {0}", new_BatchRecordRef.Id.ToString());
-
+                            MainProcess(0, taskEn, "lms_legalbatch", "lms_batchkey", batchKey, service, tracer);
                         }
                         break;
 
                     case 176660001: // Finance
                         {
-                            Entity legalBatchRecord = FindBatchRecord("lms_financebatch", "lms_batchkey", batchKey, service);
-                            EntityReference new_BatchRecordRef = null;
-                            if (legalBatchRecord == null)
-                            {
-                                new_BatchRecordRef = CreateBatchRecord("lms_financebatch", "lms_batchkey", batchKey, service);
-                            }
-                            else
-                            {
-                                new_BatchRecordRef = legalBatchRecord.ToEntityReference();
-                            }
-
-                            Entity update_BatchRecordEn = new Entity(taskEn.LogicalName, taskEn.Id);
-                            update_BatchRecordEn["lms_financebatch"] = new_BatchRecordRef;
-
-                            service.Update(update_BatchRecordEn);
-                            tracer.Trace("Updated Finance Batch Record ID: {0}", new_BatchRecordRef.Id.ToString());
+                            MainProcess(0, taskEn, "lms_financebatch", "lms_batchkey", batchKey, service, tracer);   
                         }
                         break;
 
                     case 176660003: // Tenancy
                         {
-                            Entity legalBatchRecord = FindBatchRecord("lms_tenancyadminbatch", "lms_batchkey", batchKey, service);
-                            EntityReference new_BatchRecordRef = null;
-                            if (legalBatchRecord == null)
-                            {
-                                new_BatchRecordRef = CreateBatchRecord("lms_tenancyadminbatch", "lms_batchkey", batchKey, service);
-                            }
-                            else
-                            {
-                                new_BatchRecordRef = legalBatchRecord.ToEntityReference();
-                            }
-
-                            Entity update_BatchRecordEn = new Entity(taskEn.LogicalName, taskEn.Id);
-                            update_BatchRecordEn["lms_tenancyadminbatch"] = new_BatchRecordRef;
-
-                            service.Update(update_BatchRecordEn);
-                            tracer.Trace("Updated Tenancy Admin Batch Record ID: {0}", new_BatchRecordRef.Id.ToString());
+                            MainProcess(0, taskEn, "lms_tenancyadminbatch", "lms_batchkey", batchKey, service, tracer);
                         }
                         break;
                 }
@@ -135,8 +89,49 @@ namespace ACW.Plugin
             new_BatchEn[batchKeyFieldLogicalName] = batchKey;
 
             var new_Guid = service.Create(new_BatchEn);
-
+            
             return new EntityReference(entityLogicalName, new_Guid);
+        }
+
+        private void MainProcess(int retryCount,Entity taskEn, string entityLogicalName, string targetFieldLogicalName, string batchKey, IOrganizationService service, ITracingService tracer) 
+        {
+            if (retryCount == 5) 
+            {
+                return;
+            }
+            try
+            {
+                Entity legalBatchRecord = FindBatchRecord(entityLogicalName, targetFieldLogicalName, batchKey, service);
+                EntityReference new_BatchRecordRef = null;
+                if (legalBatchRecord == null)
+                {
+                    Entity new_BatchEn = new Entity(entityLogicalName);
+                    new_BatchEn[targetFieldLogicalName] = batchKey;
+
+                    var new_Guid = service.Create(new_BatchEn);
+
+                    new_BatchRecordRef = new EntityReference(entityLogicalName, new_Guid);
+                }
+                else
+                {
+                    new_BatchRecordRef = legalBatchRecord.ToEntityReference();
+                }
+
+                Entity batchRecord = service.Retrieve(new_BatchRecordRef.LogicalName, new_BatchRecordRef.Id, new ColumnSet("lms_name"));
+                string batchNo = batchRecord.GetAttributeValue<string>("lms_name");
+
+                Entity update_BatchRecordEn = new Entity(taskEn.LogicalName, taskEn.Id);
+                update_BatchRecordEn[entityLogicalName] = new_BatchRecordRef;
+                update_BatchRecordEn["lms_batchno"] = batchNo;
+
+                service.Update(update_BatchRecordEn);
+                tracer.Trace("Updated Batch Record ID: {0}", new_BatchRecordRef.Id.ToString());
+            }
+            catch 
+            {
+                tracer.Trace("Retrying count {0}", (retryCount + 1).ToString());
+                MainProcess(retryCount + 1, taskEn, entityLogicalName, targetFieldLogicalName, batchKey, service, tracer);
+            }
         }
     }
 }
