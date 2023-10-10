@@ -99,6 +99,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountCheckContactRoleDescription.cs" />
     <Compile Include="BookingCreateBookingUnitText.cs" />
     <Compile Include="BookingPrefixLogic.cs" />
     <Compile Include="CreateBatchRecordAndMapToTask.cs" />
