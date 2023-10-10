@@ -122,7 +122,7 @@ namespace ACW.Plugin
 
                 Entity update_BatchRecordEn = new Entity(taskEn.LogicalName, taskEn.Id);
                 update_BatchRecordEn[entityLogicalName] = new_BatchRecordRef;
-                update_BatchRecordEn["lms_batchno"] = batchNo;
+                update_BatchRecordEn["lms_batchnolegalstamping"] = batchNo;
 
                 service.Update(update_BatchRecordEn);
                 tracer.Trace("Updated Batch Record ID: {0}", new_BatchRecordRef.Id.ToString());
