@@ -100,6 +100,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountCheckContactRoleDescription.cs" />
+    <Compile Include="AccountContactPvBillingSyncUpdate.cs" />
+    <Compile Include="AccountContactPvBillingSyncOutput.cs" />
     <Compile Include="BookingCreateBookingUnitText.cs" />
     <Compile Include="BookingPrefixLogic.cs" />
     <Compile Include="CreateBatchRecordAndMapToTask.cs" />
