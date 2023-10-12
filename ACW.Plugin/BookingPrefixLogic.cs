@@ -71,7 +71,8 @@ namespace ACW.Plugin
             qe.Criteria.AddCondition("lms_unittype", ConditionOperator.Equal, unitType.Id);
             qe.Criteria.AddCondition("createdon", ConditionOperator.ThisYear);
 
-            EntityCollection ec = service.RetrieveMultiple(qe);
+            //EntityCollection ec = service.RetrieveMultiple(qe);
+            EntityCollection ec = RetrieveAllRecords(qe, service);
             return ec.Entities.Count;
         }
 
@@ -108,6 +109,30 @@ namespace ACW.Plugin
             };
             var response2 = service.Execute(request);
             return (DateTime)response2.Results["LocalTime"];
+        }
+
+        public EntityCollection RetrieveAllRecords(QueryExpression query, IOrganizationService service, int count = 5000)
+        {
+            query.PageInfo = new PagingInfo();
+            query.PageInfo.Count = count;
+            query.PageInfo.PageNumber = 1;
+            query.PageInfo.ReturnTotalRecordCount = true;
+            EntityCollection entityCollection = service.RetrieveMultiple(query);
+            EntityCollection ecFinal = new EntityCollection();
+            foreach (Entity i in entityCollection.Entities)
+            {
+                ecFinal.Entities.Add(i);
+            }
+            do
+            {
+                query.PageInfo.PageNumber += 1;
+                query.PageInfo.PagingCookie = entityCollection.PagingCookie;
+                entityCollection = service.RetrieveMultiple(query);
+                foreach (Entity i in entityCollection.Entities)
+                    ecFinal.Entities.Add(i);
+            }
+            while (entityCollection.MoreRecords);
+            return ecFinal;
         }
     }
 }
