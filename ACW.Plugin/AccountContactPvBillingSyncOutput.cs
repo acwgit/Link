@@ -18,6 +18,10 @@ namespace ACW.Plugin
         [Input("Role Description")]
         public InArgument<string> _role { get; set; }
 
+        [RequiredArgument]
+        [Input("Field Name")]
+        public InArgument<string> _fieldName { get; set; }
+
         [Output("Done or not")]
         public OutArgument<bool> _done { get; set; }
 
@@ -35,13 +39,15 @@ namespace ACW.Plugin
             {
                 EntityReference account = this._account.Get(executionContext);
                 Entity role = GetRole(this._role.Get(executionContext));
-                tracer.Trace("Account: {0}", account.ToString());
-                tracer.Trace("Role: {0}", role.ToString());
+                string field = this._fieldName.Get(executionContext);
+                tracer.Trace("Account: {0}", account.Id.ToString());
+                tracer.Trace("Role: {0}", role.Id.ToString());
+                tracer.Trace("Field: {0}", field);
 
-                Entity contact = GetContact(account, role);
+                Entity contact = GetContact(account, role, field);
                 if (contact != null)
                 {
-                    var done = contact.GetAttributeValue<bool>("lms_yardisynchronizationdone");
+                    var done = contact.GetAttributeValue<bool>(field);
                     tracer.Trace("Done: {0}", done.ToString());
                     this._done.Set(executionContext, done);
                 }
@@ -54,12 +60,13 @@ namespace ACW.Plugin
             }
         }
 
-        private Entity GetContact(EntityReference account, Entity role)
+        private Entity GetContact(EntityReference account, Entity role, string field)
         {
             QueryExpression qe = new QueryExpression("contact");
             qe.Criteria.AddCondition("lms_account", ConditionOperator.Equal, account.Id);
+            qe.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
             qe.Criteria.AddCondition("lms_roledescription", ConditionOperator.Equal, role.Id);
-            qe.ColumnSet.AddColumn("lms_yardisynchronizationdone");
+            qe.ColumnSet.AddColumn(field);
 
             EntityCollection ec = service.RetrieveMultiple(qe);
             int count = ec.Entities.Count;

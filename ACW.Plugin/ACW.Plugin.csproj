@@ -104,6 +104,7 @@
     <Compile Include="AccountContactPvBillingSyncOutput.cs" />
     <Compile Include="BookingCreateBookingUnitText.cs" />
     <Compile Include="BookingPrefixLogic.cs" />
+    <Compile Include="CreateAutoNumberFromPrefix.cs" />
     <Compile Include="CreateBatchRecordAndMapToTask.cs" />
     <Compile Include="DealGetOwnerBuName.cs" />
     <Compile Include="DynamicUrlParser.cs" />
