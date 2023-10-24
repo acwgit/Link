@@ -116,6 +116,7 @@
     <Compile Include="LeaseRenewalLeadNo.cs" />
     <Compile Include="MapMultiSelectOptionSet.cs" />
     <Compile Include="OriginalLeasesFromLease.cs" />
+    <Compile Include="PropertyGetUser.cs" />
     <Compile Include="TaskGetBatchAndAmountText.cs" />
     <Compile Include="UpdateAllAssociateRecords.cs" />
     <Compile Include="GetFieldFromLookupEntity.cs" />
