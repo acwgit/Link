@@ -115,6 +115,7 @@
     <Compile Include="LeaseIdRenewalCompareHoldoverEnd.cs" />
     <Compile Include="LeaseRenewalLeadNo.cs" />
     <Compile Include="MapMultiSelectOptionSet.cs" />
+    <Compile Include="OfferToLeadScenario.cs" />
     <Compile Include="OriginalLeasesFromLease.cs" />
     <Compile Include="PropertyGetUser.cs" />
     <Compile Include="TaskGetBatchAndAmountText.cs" />
