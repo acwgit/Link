@@ -76,6 +76,7 @@ namespace ACW.Plugin
                 if (offerEn == null) 
                 {
                     tracer.Trace("No Offer Found");
+                    return;
                 }
 
                 switch(fieldType) 
